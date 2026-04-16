@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 export default function CustomerDashboard() {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const ticketId = searchParams.get('ticket') || 'Patron_Generic';
@@ -64,7 +65,7 @@ export default function CustomerDashboard() {
   useEffect(() => {
     // Legacy Routing Fetcher
     if (ticketId) {
-      fetch('https://prompt-wars-umber.vercel.app/api/routing/entry', {
+      fetch(`${API_URL}/api/routing/entry`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticket_id: ticketId })
@@ -77,7 +78,7 @@ export default function CustomerDashboard() {
     // New Priority Notifications Poller
     const fetchDynamics = async () => {
       try {
-        const notsRes = await fetch('https://prompt-wars-umber.vercel.app/api/notifications');
+        const notsRes = await fetch(`${API_URL}/api/notifications`);
         const notsData = await notsRes.json();
         setNotifications(notsData.notifications || []);
       } catch (e) {
@@ -127,7 +128,7 @@ export default function CustomerDashboard() {
             });
 
             // Broadcast to backend one-time
-            fetch('https://prompt-wars-umber.vercel.app/api/notifications', {
+            fetch(`${API_URL}/api/notifications`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -192,7 +193,7 @@ export default function CustomerDashboard() {
       if (error) throw error;
 
       // Broadcast Notification to Volunteers (Non-blocking cleanup)
-      fetch('https://prompt-wars-umber.vercel.app/api/notifications', {
+      fetch(`${API_URL}/api/notifications`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -251,7 +252,7 @@ export default function CustomerDashboard() {
       setMyBooking({ zoneId: zone.Seat_ID, number: newCount });
 
       // 4. Update operative grid via notification
-      fetch('https://prompt-wars-umber.vercel.app/api/notifications', {
+      fetch(`${API_URL}/api/notifications`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

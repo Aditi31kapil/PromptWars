@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient';
 import { toast } from 'react-toastify';
 
 export default function VolunteerPortal() {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const staffId = searchParams.get('staff') || 'staff_1';
@@ -67,12 +68,12 @@ export default function VolunteerPortal() {
               autoClose: false,
               position: 'bottom-right'
             });
-            // Log the notification to local systems board
-            fetch('https://stadiasync.onrender.com/api/notifications', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ sender: 'Command Dispatch', content: `OPERATIVE REASSIGNMENT: ${newData.name} urgently deployed to ${newData.current_zone}.` })
-            });
+             // Log the notification to local systems board
+             fetch(`${API_URL}/api/notifications`, {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ sender: 'Command Dispatch', content: `OPERATIVE REASSIGNMENT: ${newData.name} urgently deployed to ${newData.current_zone}.` })
+             });
           }
           setStaffData(newData);
         }
@@ -100,7 +101,7 @@ export default function VolunteerPortal() {
   useEffect(() => {
     const fetchDynamics = async () => {
       try {
-        const notsRes = await fetch('https://stadiasync.onrender.com/api/notifications');
+        const notsRes = await fetch(`${API_URL}/api/notifications`);
         const notsData = await notsRes.json();
         setNotifications(notsData.notifications || []);
       } catch (e) {
@@ -141,7 +142,7 @@ export default function VolunteerPortal() {
       toast.success("Broadcasted natively to Supabase: Item Logged");
 
       // Optional: Keep your notification fetch
-      fetch('https://stadiasync.onrender.com/api/notifications', {
+      fetch(`${API_URL}/api/notifications`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

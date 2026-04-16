@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient';
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, ResponsiveContainer, YAxis, Legend } from 'recharts';
 
 export default function AdminHub() {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [volunteers, setVolunteers] = useState([]);
@@ -99,7 +100,7 @@ export default function AdminHub() {
           const isDanger = occupancyRatio > 0.9;
 
           if (isDanger && !notifiedHotspots.has(hs.id)) {
-            fetch('https://stadiasync.onrender.com/api/notifications', {
+            fetch(`${API_URL}/api/notifications`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ sender: 'System Autobot', content: `CRITICAL CONGESTION: ${hs.id} breached 90% capacity. Proceed with crowd control protocols.` })

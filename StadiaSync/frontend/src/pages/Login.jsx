@@ -11,11 +11,13 @@ export default function Login() {
     // Basic RBAC Check logic
     // If it looks like a ticket tx_...
     if (identifier.startsWith('tx_')) {
-      const { data } = await supabase.from('tickets').select('*').eq('ticket_id', identifier).single();
-      if (data) {
+      const { data, error } = await supabase.from('tickets').select('*').eq('ticket_id', identifier);
+      if (data && data.length > 0) {
         navigate(`/customer-dashboard?ticket=${identifier}`);
         return;
       }
+      alert('Ticket ID not found. Ensure it is exactly 5 digits (e.g., tx_00001).');
+      return;
     }
     
     // If it looks like staff (staff_...)
