@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 export default function CustomerDashboard() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const ticketId = searchParams.get('ticket') || 'Patron_Generic';
 
   // Existing States
@@ -63,7 +64,7 @@ export default function CustomerDashboard() {
   useEffect(() => {
     // Legacy Routing Fetcher
     if (ticketId) {
-      fetch('http://localhost:8000/api/routing/entry', {
+      fetch('https://prompt-wars-umber.vercel.app/api/routing/entry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticket_id: ticketId })
@@ -76,7 +77,7 @@ export default function CustomerDashboard() {
     // New Priority Notifications Poller
     const fetchDynamics = async () => {
       try {
-        const notsRes = await fetch('http://localhost:8000/api/notifications');
+        const notsRes = await fetch('https://prompt-wars-umber.vercel.app/api/notifications');
         const notsData = await notsRes.json();
         setNotifications(notsData.notifications || []);
       } catch (e) {
@@ -126,7 +127,7 @@ export default function CustomerDashboard() {
             });
 
             // Broadcast to backend one-time
-            fetch('http://localhost:8000/api/notifications', {
+            fetch('https://prompt-wars-umber.vercel.app/api/notifications', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -191,7 +192,7 @@ export default function CustomerDashboard() {
       if (error) throw error;
 
       // Broadcast Notification to Volunteers (Non-blocking cleanup)
-      fetch('http://localhost:8000/api/notifications', {
+      fetch('https://prompt-wars-umber.vercel.app/api/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -250,7 +251,7 @@ export default function CustomerDashboard() {
       setMyBooking({ zoneId: zone.Seat_ID, number: newCount });
 
       // 4. Update operative grid via notification
-      fetch('http://localhost:8000/api/notifications', {
+      fetch('https://prompt-wars-umber.vercel.app/api/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -269,7 +270,7 @@ export default function CustomerDashboard() {
         <h1 style={{ margin: 0, fontSize: '1.4rem', color: '#1A73E8', letterSpacing: '1px', textTransform: 'uppercase' }}>
           PATRON SERVICES CONNECT ({ticketId})
         </h1>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <div style={{ background: '#111A33', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ fontSize: '1.2rem' }}>🌤️</span>
             <div>
@@ -277,6 +278,25 @@ export default function CustomerDashboard() {
               <div style={{ fontWeight: 'bold' }}>26°C Clear Night</div>
             </div>
           </div>
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              background: 'rgba(255, 77, 77, 0.1)',
+              color: '#ff4d4d',
+              border: '1px solid rgba(255, 77, 77, 0.3)',
+              padding: '0.5rem 1rem',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => e.target.style.background = 'rgba(255, 77, 77, 0.2)'}
+            onMouseOut={(e) => e.target.style.background = 'rgba(255, 77, 77, 0.1)'}
+          >
+            Exit
+          </button>
         </div>
       </div>
 
